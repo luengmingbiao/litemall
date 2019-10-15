@@ -10,3 +10,8 @@ logging:
     org.springframework:  ERROR
     org.mybatis:  ERROR
     org.linlinjava.litemall.core:  DEBUG
+
+#litemall:
+#  wx:
+#    app-id: wx4d01fac309410dd7
+#    app-secret: 4af9788a37dfde9499ca6bc311fc6c3a

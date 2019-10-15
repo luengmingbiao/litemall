@@ -13,6 +13,27 @@
         </encoder>
     </appender>
 
+    <appender name="flumeTest" class="com.teambytes.logback.flume.FlumeLogstashV1Appender">
+        <flumeAgents>
+            192.168.87.137:44444
+        </flumeAgents>
+        <flumeProperties>
+            connect-timeout=4000;
+            request-timeout=8000
+        </flumeProperties>
+        <batchSize>100</batchSize>
+        <reportingWindow>1000</reportingWindow>
+        <additionalAvroHeaders>
+            myHeader = myValue
+        </additionalAvroHeaders>
+        <application>luengmingbiao's Application</application>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                %d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </layout>
+    </appender>
+
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.path}/log.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -53,6 +74,11 @@
     <logger name="org.linlinjava.litemall.core" level="DEBUG" />
     <logger name="org.linlinjava.litemall.db" level="DEBUG" />
     <logger name="org.linlinjava.litemall.admin" level="DEBUG" />
-    <logger name="org.linlinjava.litemall.wx" level="DEBUG" />
+    <logger name="org.linlinjava.litemall.wx" level="DEBUG">
+        <appender-ref ref="flumeTest" />
+    </logger>
     <logger name="org.linlinjava.litemall" level="DEBUG" />
+<!--    <logger name="test" level="DEBUG">-->
+<!--        <appender-ref ref="flumeTest" />-->
+<!--    </logger>-->
 </configuration>

@@ -10,8 +10,8 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.4.0",
-	"appid": "wxa5b486c6b918ecfb",
-	"projectname": "Renard",
+	"appid": "wxc46fa218113b37bd",
+	"projectname": "renard-wx",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {
