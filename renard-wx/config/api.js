@@ -33,6 +33,8 @@ module.exports = {
   CartChecked: WxApiRoot + 'cart/checked', // 选择或取消选择商品
   CartGoodsCount: WxApiRoot + 'cart/goodscount', // 获取购物车商品件数
   CartCheckout: WxApiRoot + 'cart/checkout', // 下单前信息确认
+  CollectList: WxApiRoot + 'collect/list', //收藏列表
+  CollectAddOrDelete: WxApiRoot + 'collect/addordelete', //添加或取消收藏
 
   CommentPost: WxApiRoot + 'comment/post', //发表评论
 

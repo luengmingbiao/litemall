@@ -680,7 +680,8 @@ Page({
   },
   onReady: function() {
     // 页面渲染完成
-
+    this.sharePop = this.selectComponent("#sharePop");
+    this.notify = this.selectComponent("#van-notify");
   }
 
 })

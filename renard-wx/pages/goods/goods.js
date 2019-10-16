@@ -23,6 +23,9 @@ Page({
     checkedSpecText: '规格数量选择',
     tmpSpecText: '请选择规格数量',
     checkedSpecPrice: 0,
+    noCollectImage: '/static/images/icon_collect.png',
+    hasCollectImage: '/static/images/icon_collect_checked.png',
+    collectImage: '/static/images/icon_collect.png',
     openAttr: false,
     shareImage: '',
     isGroupon: false, //标识是否是一个参团购买
@@ -420,6 +423,30 @@ Page({
         });
       }
     });
+  },
+
+  //添加或是取消收藏
+  addCollectOrNot: function () {
+    let that = this;
+    util.request(api.CollectAddOrDelete, {
+      type: 0,
+      valueId: this.data.id
+    }, "POST")
+      .then(function (res) {
+        if (that.data.userHasCollect == 1) {
+          that.setData({
+            collectImage: that.data.noCollectImage,
+            userHasCollect: 0
+          });
+        } else {
+          that.setData({
+            collectImage: that.data.hasCollectImage,
+            userHasCollect: 1
+          });
+        }
+
+      });
+
   },
 
   //立即购买（先自动加入购物车）
