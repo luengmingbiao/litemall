@@ -121,6 +121,10 @@ public class ResponseUtil {
         return fail(501, "请登录");
     }
 
+    public static Object repeatCollect() {
+        return fail(0, "重复收藏");
+    }
+
     public static Object serious() {
         return fail(502, "系统内部错误");
     }

@@ -80,7 +80,7 @@ Page({
 
             util.request(api.CollectAddOrDelete, {
               type: that.data.type,
-              valueId: goodsId
+              itemId: goodsId
             }, 'POST').then(function(res) {
               if (res.errno === 0) {
                 console.log(res.data);

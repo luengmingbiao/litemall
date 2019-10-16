@@ -3,6 +3,8 @@ package org.linlinjava.litemall.wx.web;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.alibaba.fastjson.JSONObject;
+import org.junit.Test;
 import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.core.validator.Order;
@@ -17,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +86,7 @@ public class WxCollectController {
      * 如果商品没有收藏，则添加收藏；如果商品已经收藏，则删除收藏状态。
      *
      * @param userId 用户ID
-     * @param body   请求内容，{ type: xxx, valueId: xxx }
+     * @param body   请求内容，{ type: xxx, itemId: xxx, itemCategory: xxx}
      * @return 操作结果
      */
     @PostMapping("addordelete")
@@ -93,13 +96,15 @@ public class WxCollectController {
         }
 
         Byte type = JacksonUtil.parseByte(body, "type");
-        Integer valueId = JacksonUtil.parseInteger(body, "valueId");
+        Integer valueId = JacksonUtil.parseInteger(body, "itemId");
         if (!ObjectUtils.allNotNull(type, valueId)) {
             return ResponseUtil.badArgument();
         }
 
         LitemallCollect collect = collectService.queryByTypeAndValue(userId, type, valueId);
 
+        JSONObject jsonObject = JSONObject.parseObject(body);
+        jsonObject.put("userId", userId);
         if (collect != null) {
             collectService.deleteById(collect.getId());
         } else {
@@ -108,8 +113,13 @@ public class WxCollectController {
             collect.setValueId(valueId);
             collect.setType(type);
             collectService.add(collect);
+
+            jsonObject.put("behaviorType", 2);
+            jsonObject.put("time", LocalDateTime.now());
+            logger.info(jsonObject);
         }
 
         return ResponseUtil.ok();
     }
+
 }

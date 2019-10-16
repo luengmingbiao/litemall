@@ -430,7 +430,8 @@ Page({
     let that = this;
     util.request(api.CollectAddOrDelete, {
       type: 0,
-      valueId: this.data.id
+      itemId: this.data.id,
+      itemCategory: this.data.goods.categoryId
     }, "POST")
       .then(function (res) {
         if (that.data.userHasCollect == 1) {
@@ -444,7 +445,6 @@ Page({
             userHasCollect: 1
           });
         }
-
       });
 
   },
