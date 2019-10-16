@@ -125,7 +125,7 @@ Page({
     }, 'POST').then(res => {
       if (res.errno === 0) {
         const orderId = res.data.orderId;
-        util.request(api.OrderPrepay, {
+        util.request(api.NewOrderPrepay, {
           orderId: orderId
         }, 'POST').then(function(res) {
           if (res.errno === 0) {

@@ -1,5 +1,6 @@
 package org.linlinjava.litemall.wx.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
@@ -36,10 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.linlinjava.litemall.wx.util.WxResponseCode.*;
 
@@ -539,7 +537,7 @@ public class WxOrderService {
 
             result = wxPayService.createOrder(orderRequest);
 
-            //缓存prepayID用于后续模版通知
+            // 缓存prepayID用于后续模版通知
             String prepayId = result.getPackageValue();
             prepayId = prepayId.replace("prepay_id=", "");
             LitemallUserFormid userFormid = new LitemallUserFormid();
@@ -559,6 +557,106 @@ public class WxOrderService {
             return ResponseUtil.updatedDateExpired();
         }
         return ResponseUtil.ok(result);
+    }
+
+
+    /**
+     *  模拟订单支付
+     * @param userId   用户Id
+     * @param body  订单信息，{ orderId：xxx }
+     * @return  支付订单ID
+     */
+    @Transactional
+    public Object newPrepay(Integer userId, String body) {
+        if (userId == null)
+            return ResponseUtil.unlogin();
+
+        Integer orderId = JacksonUtil.parseInteger(body, "orderId");
+        if (orderId == null)
+            return ResponseUtil.badArgument();
+
+        LitemallOrder order = orderService.findById(orderId);
+        if (order == null)
+            return ResponseUtil.badArgumentValue();
+        if (!order.getUserId().equals(userId))
+            return ResponseUtil.badArgumentValue();
+
+        // 检测是否能够取消
+        OrderHandleOption handleOption = OrderUtil.build(order);
+        if (!handleOption.isPay()) {
+            return ResponseUtil.fail(ORDER_INVALID_OPERATION, "订单不能支付");
+        }
+
+        LitemallUser user = userService.findById(userId);
+        String openid = user.getWeixinOpenid();
+        if (openid == null) {
+            return ResponseUtil.fail(AUTH_OPENID_UNACCESS, "订单不能支付");
+        }
+
+        JSONObject wxPayMyOrderResult = new JSONObject();
+        wxPayMyOrderResult.put("appId", "wxc46fa218113b37bd");
+        wxPayMyOrderResult.put("timeStamp", LocalDateTime.now());
+        wxPayMyOrderResult.put("nonceStr", "test");
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        wxPayMyOrderResult.put("packageValue", uuid);
+        wxPayMyOrderResult.put("signType", "test");
+        wxPayMyOrderResult.put("paySign", "test");
+
+        // 缓存prepayID用于后续模版通知
+        String prepayId = wxPayMyOrderResult.getString("packageValue");
+        LitemallUserFormid userFormid = new LitemallUserFormid();
+        userFormid.setOpenid(user.getWeixinOpenid());
+        userFormid.setFormid(prepayId);
+        userFormid.setIsprepay(true);
+        userFormid.setUseamount(3);
+        userFormid.setExpireTime(LocalDateTime.now().plusDays(7));
+        formIdService.addUserFormid(userFormid);
+
+        if (orderService.updateWithOptimisticLocker(order) == 0) {
+            return ResponseUtil.updatedDateExpired();
+        }
+
+        String payId = UUID.randomUUID().toString().replaceAll("-","");
+        order.setPayId(payId);
+        order.setPayTime(LocalDateTime.now());
+        order.setOrderStatus(OrderUtil.STATUS_PAY);
+
+        if (orderService.updateWithOptimisticLocker(order) == 0) {
+            // 这里可能存在这样一个问题，用户支付和系统自动取消订单发生在同时
+            // 如果数据库首先因为系统自动取消订单而更新了订单状态；
+            // 此时用户支付完成回调这里也要更新数据库，而由于乐观锁机制这里的更新会失败
+            // 因此，这里会重新读取数据库检查状态是否是订单自动取消，如果是则更新成支付状态。
+            order = orderService.findBySn(order.getOrderSn());
+            int updated = 0;
+            if (OrderUtil.isAutoCancelStatus(order)) {
+                order.setPayId(payId);
+                order.setPayTime(LocalDateTime.now());
+                order.setOrderStatus(OrderUtil.STATUS_PAY);
+                updated = orderService.updateWithOptimisticLocker(order);
+            }
+
+            // 如果updated是0，那么数据库更新失败
+            if (updated == 0) {
+                return WxPayNotifyResponse.fail("更新数据已失效");
+            }
+        }
+
+        LitemallGroupon groupon = grouponService.queryByOrderId(orderId);
+        if (groupon != null) {
+            LitemallGrouponRules grouponRules = grouponRulesService.queryById(groupon.getRulesId());
+
+            //仅当发起者才创建分享图片
+            if (groupon.getGrouponId() == 0) {
+                String url = qCodeService.createGrouponShareImage(grouponRules.getGoodsName(), grouponRules.getPicUrl(), groupon);
+                groupon.setShareUrl(url);
+            }
+            groupon.setPayed(true);
+            if (grouponService.updateById(groupon) == 0) {
+                return WxPayNotifyResponse.fail("更新数据已失效");
+            }
+        }
+
+        return ResponseUtil.ok(wxPayMyOrderResult);
     }
 
     /**

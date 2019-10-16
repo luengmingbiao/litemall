@@ -2,8 +2,11 @@ package org.linlinjava.litemall.wx.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.linlinjava.litemall.core.util.JacksonUtil;
+import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.core.validator.Order;
 import org.linlinjava.litemall.core.validator.Sort;
+import org.linlinjava.litemall.db.domain.LitemallOrder;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.WxOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +92,12 @@ public class WxOrderController {
     public Object prepay(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
         return wxOrderService.prepay(userId, body, request);
     }
+
+    @PostMapping("newPrepay")
+    public Object newPrepay(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
+        return wxOrderService.newPrepay(userId, body);
+    }
+
 
     /**
      * 微信付款成功或失败回调接口

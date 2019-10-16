@@ -7,6 +7,7 @@ Page({
     orderInfo: {},
     orderGoods: [],
     expressInfo: {},
+    first: true,
     flag: false,
     handleOption: {}
   },
@@ -60,33 +61,62 @@ Page({
   },
   // “去付款”按钮点击效果
   payOrder: function() {
+    // 避免重复支付
     let that = this;
-    util.request(api.OrderPrepay, {
-      orderId: that.data.orderId
-    }, 'POST').then(function(res) {
-      if (res.errno === 0) {
-        const payParam = res.data;
-        console.log("支付过程开始");
-        wx.requestPayment({
-          'timeStamp': payParam.timeStamp,
-          'nonceStr': payParam.nonceStr,
-          'package': payParam.packageValue,
-          'signType': payParam.signType,
-          'paySign': payParam.paySign,
-          'success': function(res) {
-            console.log("支付过程成功");
-            util.redirect('/pages/ucenter/order/order');
-          },
-          'fail': function(res) {
-            console.log("支付过程失败");
-            util.showErrorToast('支付失败');
-          },
-          'complete': function(res) {
-            console.log("支付过程结束")
-          }
-        });
-      }
-    });
+    if(this.data.first){
+      util.request(api.NewOrderPrepay, {
+        orderId: that.data.orderId
+      }, 'POST').then(function(res) {
+        if(res.errno === 0) {
+          console.log("已成功支付")
+          wx.redirectTo({
+            url: '/pages/payResult/payResult?status=1&orderId=' + orderId
+          });
+        } else {
+          wx.redirectTo({
+            url: '/pages/payResult/payResult?status=0&orderId=' + orderId
+          });
+        }
+      })
+      wx.showToast({
+        title: '支付成功',
+      })
+      this.setData({
+        first:false
+      })
+    } else {
+      wx.showToast({
+        title: '已支付',
+        icon: 'none'
+      })
+    }
+    // let that = this;
+    // util.request(api.OrderPrepay, {
+    //   orderId: that.data.orderId
+    // }, 'POST').then(function(res) {
+    //   if (res.errno === 0) {
+    //     const payParam = res.data;
+    //     console.log("支付过程开始");
+    //     wx.requestPayment({
+    //       'timeStamp': payParam.timeStamp,
+    //       'nonceStr': payParam.nonceStr,
+    //       'package': payParam.packageValue,
+    //       'signType': payParam.signType,
+    //       'paySign': payParam.paySign,
+    //       'success': function(res) {
+    //         console.log("支付过程成功");
+    //         util.redirect('/pages/ucenter/order/order');
+    //       },
+    //       'fail': function(res) {
+    //         console.log("支付过程失败");
+    //         util.showErrorToast('支付失败');
+    //       },
+    //       'complete': function(res) {
+    //         console.log("支付过程结束")
+    //       }
+    //     });
+    //   }
+    // });
 
   },
   // “取消订单”点击效果
