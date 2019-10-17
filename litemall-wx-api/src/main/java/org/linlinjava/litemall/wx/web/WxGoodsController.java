@@ -1,5 +1,6 @@
 package org.linlinjava.litemall.wx.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mysql.jdbc.StringUtils;
 import org.apache.commons.logging.Log;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,6 +198,15 @@ public class WxGoodsController {
 
 		//商品分享图片地址
 		data.put("shareImage", info.getShareUrl());
+
+		JSONObject userBehaviorJson = new JSONObject();
+		userBehaviorJson.put("userId", userId);
+		userBehaviorJson.put("itemId", id);
+		userBehaviorJson.put("behaviorType", 1);
+		userBehaviorJson.put("itemCategory", info.getCategoryId());
+		userBehaviorJson.put("time", LocalDateTime.now());
+		logger.info(userBehaviorJson);
+
 		return ResponseUtil.ok(data);
 	}
 

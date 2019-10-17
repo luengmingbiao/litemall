@@ -1,5 +1,6 @@
 package org.linlinjava.litemall.wx.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
@@ -70,6 +71,8 @@ public class WxOrderService {
     private LitemallUserService userService;
     @Autowired
     private LitemallOrderService orderService;
+    @Autowired
+    private LitemallGoodsService goodsService;
     @Autowired
     private LitemallOrderGoodsService orderGoodsService;
     @Autowired
@@ -351,6 +354,8 @@ public class WxOrderService {
         orderService.add(order);
         orderId = order.getId();
 
+        JSONArray userBehaviorJsonArray = new JSONArray();
+
         // 添加订单商品表项
         for (LitemallCart cartGoods : checkedGoodsList) {
             // 订单商品
@@ -367,7 +372,18 @@ public class WxOrderService {
             orderGoods.setAddTime(LocalDateTime.now());
 
             orderGoodsService.add(orderGoods);
+
+            LitemallGoods goods = goodsService.findById(Integer.valueOf(cartGoods.getGoodsSn()));
+
+            JSONObject userBehaviorJson = new JSONObject();
+            userBehaviorJson.put("userId", userId);
+            userBehaviorJson.put("itemId", cartGoods.getGoodsSn());
+            userBehaviorJson.put("behaviorType", 4);
+            userBehaviorJson.put("itemCategory", goods.getCategoryId());
+            userBehaviorJson.put("time", LocalDateTime.now());
+            userBehaviorJsonArray.add(userBehaviorJson);
         }
+        logger.info(userBehaviorJsonArray);
 
         // 删除购物车里面的商品信息
         cartService.clearGoods(userId);
@@ -612,10 +628,6 @@ public class WxOrderService {
         userFormid.setExpireTime(LocalDateTime.now().plusDays(7));
         formIdService.addUserFormid(userFormid);
 
-        if (orderService.updateWithOptimisticLocker(order) == 0) {
-            return ResponseUtil.updatedDateExpired();
-        }
-
         String payId = UUID.randomUUID().toString().replaceAll("-","");
         order.setPayId(payId);
         order.setPayTime(LocalDateTime.now());
@@ -641,6 +653,7 @@ public class WxOrderService {
             }
         }
 
+        //  支付成功，有团购信息，更新团购信息
         LitemallGroupon groupon = grouponService.queryByOrderId(orderId);
         if (groupon != null) {
             LitemallGrouponRules grouponRules = grouponRulesService.queryById(groupon.getRulesId());

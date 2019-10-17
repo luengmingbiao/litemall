@@ -34,6 +34,11 @@
     -->
     <result column="detail" jdbcType="LONGVARCHAR" property="detail" />
   </resultMap>
+<!--  -->
+<!--  <resultMap id="goodsCategoryResultMap" type="">-->
+<!--    <result column="goods_sn" jdbcType="VARCHAR" property="goodsSn" />-->
+<!--    <result column="category_id" jdbcType="INTEGER" property="categoryId" />-->
+<!--  </resultMap>-->
   <sql id="Example_Where_Clause">
     <!--
       WARNING - @mbg.generated
@@ -782,6 +787,11 @@
     </if>
     limit 1
   </select>
+
+<!--  <select id="findGoodsByIdList" parameterMap="">-->
+
+<!--  </select>-->
+
   <update id="logicalDeleteByExample" parameterType="map">
     <!--
       WARNING - @mbg.generated

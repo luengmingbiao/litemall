@@ -171,6 +171,10 @@ public class LitemallGoodsService {
         return goodsMapper.selectOneByExampleSelective(example, columns);
     }
 
+//    public List<Integer> findGoodsByIdList() {
+//        return goodsMapper.
+//    }
+
 
     /**
      * 获取所有在售物品总数

@@ -59,28 +59,33 @@ Page({
       }
     });
   },
+
   // “去付款”按钮点击效果
   payOrder: function() {
     // 避免重复支付
     let that = this;
-    if(this.data.first){
+    if(that.data.first){
       util.request(api.NewOrderPrepay, {
         orderId: that.data.orderId
       }, 'POST').then(function(res) {
         if(res.errno === 0) {
           console.log("已成功支付")
+          wx.showToast({
+            title: '已成功支付',
+          })
           wx.redirectTo({
-            url: '/pages/payResult/payResult?status=1&orderId=' + orderId
+            url: '/pages/payResult/payResult?status=1&orderId=' + that.data.orderId
           });
         } else {
+          wx.showToast({
+            title: '支付失败',
+          })
           wx.redirectTo({
-            url: '/pages/payResult/payResult?status=0&orderId=' + orderId
+            url: '/pages/payResult/payResult?status=0&orderId=' + that.data.orderId
           });
         }
       })
-      wx.showToast({
-        title: '支付成功',
-      })
+
       this.setData({
         first:false
       })
