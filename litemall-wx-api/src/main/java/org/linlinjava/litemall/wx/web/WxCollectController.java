@@ -115,7 +115,7 @@ public class WxCollectController {
             collectService.add(collect);
 
             jsonObject.put("behaviorType", 2);
-            jsonObject.put("time", LocalDateTime.now());
+            jsonObject.put("time", LocalDateTime.now().toString());
             logger.info(jsonObject);
         }
 

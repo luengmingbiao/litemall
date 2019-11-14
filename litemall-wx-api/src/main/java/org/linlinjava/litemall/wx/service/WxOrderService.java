@@ -380,7 +380,7 @@ public class WxOrderService {
             userBehaviorJson.put("itemId", cartGoods.getGoodsSn());
             userBehaviorJson.put("behaviorType", 4);
             userBehaviorJson.put("itemCategory", goods.getCategoryId());
-            userBehaviorJson.put("time", LocalDateTime.now());
+            userBehaviorJson.put("time", LocalDateTime.now().toString());
             userBehaviorJsonArray.add(userBehaviorJson);
         }
         logger.info(userBehaviorJsonArray);
@@ -795,10 +795,10 @@ public class WxOrderService {
 
     /**
      * 订单申请退款
-     * <p>
-     * 1. 检测当前订单是否能够退款；
-     * 2. 设置订单申请退款状态。
-     *
+     *      * <p>
+     *      * 1. 检测当前订单是否能够退款；
+     *      * 2. 设置订单申请退款状态。
+     *      *
      * @param userId 用户ID
      * @param body   订单信息，{ orderId：xxx }
      * @return 订单退款操作结果

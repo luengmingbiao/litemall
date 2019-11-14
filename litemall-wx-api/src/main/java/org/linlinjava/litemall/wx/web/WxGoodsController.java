@@ -204,7 +204,7 @@ public class WxGoodsController {
 		userBehaviorJson.put("itemId", id);
 		userBehaviorJson.put("behaviorType", 1);
 		userBehaviorJson.put("itemCategory", info.getCategoryId());
-		userBehaviorJson.put("time", LocalDateTime.now());
+		userBehaviorJson.put("time", LocalDateTime.now().toString());
 		logger.info(userBehaviorJson);
 
 		return ResponseUtil.ok(data);

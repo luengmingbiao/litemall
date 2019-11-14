@@ -143,7 +143,7 @@ public class WxCartController {
             userBehaviorJson.put("itemId", goodsId);
             userBehaviorJson.put("behaviorType", 3);
             userBehaviorJson.put("itemCategory", goods.getCategoryId());
-            userBehaviorJson.put("time", LocalDateTime.now());
+            userBehaviorJson.put("time", LocalDateTime.now().toString());
 
             logger.info(userBehaviorJson);
         } else {
