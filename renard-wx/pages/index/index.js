@@ -12,7 +12,7 @@ Page({
     topics: [],
     brands: [],
     groupons: [],
-    floorGoods: [],
+    floorGoods: [] ,
     // banner: [],
     channel: []
   },

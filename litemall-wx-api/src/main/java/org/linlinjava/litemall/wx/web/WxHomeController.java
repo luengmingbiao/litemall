@@ -97,7 +97,7 @@ public class WxHomeController {
 
         Callable<List> newGoodsListCallable = () -> goodsService.queryByNew(0, SystemConfig.getNewLimit());
 
-        Callable<List> hotGoodsListCallable = () -> goodsService.queryByHot(0, SystemConfig.getHotLimit());
+        Callable<List> hotGoodsListCallable = () -> goodsService.queryByHot(userId,0, SystemConfig.getHotLimit());
 
         Callable<List> brandListCallable = () -> brandService.query(0, SystemConfig.getBrandLimit());
 

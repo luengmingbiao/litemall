@@ -1,6 +1,6 @@
 <view class="container">
   <!-- 首页顶部通知消息 -->
-  <van-notice-bar scrollable="true" text="目前上架的商品均可直接下单购买，欢迎大家购买支持我的工作！" />
+  <!-- <van-notice-bar scrollable="true" text="目前上架的商品均可直接下单购买，欢迎大家购买支持我的工作！" /> -->
 
   <view class="HotName">今日推荐
     <text></text>

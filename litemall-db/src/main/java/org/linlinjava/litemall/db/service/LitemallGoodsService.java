@@ -27,7 +27,7 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByHot(int offset, int limit) {
+    public List<LitemallGoods> queryByHot(int userId, int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIsHotEqualTo(true).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time desc");

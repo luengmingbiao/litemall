@@ -14,3 +14,21 @@ logging:
     org.mybatis:  ERROR
     org.linlinjava.litemall.wx:  DEBUG
     org.linlinjava.litemall:  ERROR
+
+
+#redis
+redis:
+  # Redis服务器地址
+  host: 192.168.87.144
+  # Redis服务器连接端口
+  port: 6379
+  # redis连接密码
+  password: myredis
+  # 连接超时时间（毫秒）
+  timeout: 30000
+  # 连接池中的最大空闲连接
+  poolMaxIdle: 500
+  # 连接池中的最小空闲连接
+  poolMaxTotal: 1000
+  # 连接池最大阻塞等待时间（使用负值表示没有限制）
+  poolMaxWait: 500
