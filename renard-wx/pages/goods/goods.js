@@ -609,7 +609,7 @@ Page({
   },
   onUnload: function() {
     // 页面关闭
-
+    
   },
   switchAttrPop: function() {
     if (this.data.openAttr == false) {
@@ -623,6 +623,11 @@ Page({
     this.setData({
       openAttr: false,
     });
+    var pages = getCurrentPages;
+    if (pages.length > 1) {
+      var prePage = pages[pages.length - 2];
+      prePage.onShow()
+    }
   },
   openCartPage: function() {
     wx.switchTab({

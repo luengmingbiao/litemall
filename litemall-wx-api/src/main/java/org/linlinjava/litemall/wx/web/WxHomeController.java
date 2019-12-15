@@ -8,7 +8,10 @@ import org.linlinjava.litemall.db.domain.LitemallCategory;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.config.redis.RedisPoolFactory;
+import org.linlinjava.litemall.wx.config.redis.WxRedisConfiguration;
 import org.linlinjava.litemall.wx.service.HomeCacheManager;
+import org.linlinjava.litemall.wx.service.RedisService;
 import org.linlinjava.litemall.wx.service.WxGrouponRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -52,6 +55,9 @@ public class WxHomeController {
 
     @Autowired
     private LitemallCouponService couponService;
+
+    @Autowired
+    private RedisPoolFactory redisPoolFactory;
 
     private final static ArrayBlockingQueue<Runnable> WORK_QUEUE = new ArrayBlockingQueue<>(9);
 
@@ -97,7 +103,15 @@ public class WxHomeController {
 
         Callable<List> newGoodsListCallable = () -> goodsService.queryByNew(0, SystemConfig.getNewLimit());
 
-        Callable<List> hotGoodsListCallable = () -> goodsService.queryByHot(userId,0, SystemConfig.getHotLimit());
+        Callable<List> hotGoodsListCallable = null;
+        if (userId == null)
+            hotGoodsListCallable = () -> goodsService.queryByHot(0, SystemConfig.getHotLimit());
+        else {
+            String recommendKey = userId + "Recommend";
+            String recommendQueue = redisPoolFactory.JedisPoolFactory().getResource().get(recommendKey);
+            String[] itemArray = recommendQueue.split(",");
+            hotGoodsListCallable = () -> goodsService.findGoodsByIdList(0, SystemConfig.getHotLimit(), itemArray);
+        }
 
         Callable<List> brandListCallable = () -> brandService.query(0, SystemConfig.getBrandLimit());
 

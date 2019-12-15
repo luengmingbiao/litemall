@@ -27,7 +27,7 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByHot(int userId, int offset, int limit) {
+    public List<LitemallGoods> queryByHot(int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIsHotEqualTo(true).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time desc");
@@ -160,6 +160,24 @@ public class LitemallGoodsService {
     }
 
     /**
+     *
+     * @param offset
+     * @param limit
+     * @param idList
+     * @return
+     */
+    public List<LitemallGoods> findGoodsByIdList(int offset, int limit ,String[] idList) {
+        List<LitemallGoods> litemallGoodsList = new ArrayList<>();
+        for (String id : idList) {
+            LitemallGoods litemallGoods = findById( Integer.valueOf(id));
+            litemallGoodsList.add(litemallGoods);
+        }
+        PageHelper.startPage(offset, limit);
+
+        return litemallGoodsList;
+    }
+
+    /**
      * 获取某个商品信息，仅展示相关内容
      *
      * @param id
@@ -170,10 +188,6 @@ public class LitemallGoodsService {
         example.or().andIdEqualTo(id).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         return goodsMapper.selectOneByExampleSelective(example, columns);
     }
-
-//    public List<Integer> findGoodsByIdList() {
-//        return goodsMapper.
-//    }
 
 
     /**

@@ -20,13 +20,12 @@ public class RedisService {
     /**
      * 从redis连接池获取redis实例
      */
-    public <T> T get(KeyPrefix prefix, String key, Class<T> clazz) {
+    public <T> T get(String key, Class<T> clazz) {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
             //对key增加前缀，即可用于分类，也避免key重复
-            String realKey = prefix.getPrefix() + key;
-            String str = jedis.get(realKey);
+            String str = jedis.get(key);
             T t = stringToBean(str, clazz);
             return t;
         } finally {
