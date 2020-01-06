@@ -129,6 +129,10 @@ Page({
   },
   onShow: function() {
     // 页面显示
+    // let that = this;
+    // that.data.myintervalid = setInterval(function(){
+    //   util.request
+    // })
   },
   onHide: function() {
     // 页面隐藏

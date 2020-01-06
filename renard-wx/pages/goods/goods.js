@@ -623,11 +623,6 @@ Page({
     this.setData({
       openAttr: false,
     });
-    var pages = getCurrentPages;
-    if (pages.length > 1) {
-      var prePage = pages[pages.length - 2];
-      prePage.onShow()
-    }
   },
   openCartPage: function() {
     wx.switchTab({
