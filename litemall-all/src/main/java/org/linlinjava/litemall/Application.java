@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = {"org.linlinjava.litemall"})
 @MapperScan("org.linlinjava.litemall.db.dao")
 @EnableTransactionManagement
-@EnableScheduling` `
+@EnableScheduling
 public class Application {
 
     public static void main(String[] args) throws Exception {

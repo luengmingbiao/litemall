@@ -15,7 +15,7 @@
 
     <appender name="flumeTest" class="com.teambytes.logback.flume.FlumeLogstashV1Appender">
         <flumeAgents>
-            192.168.87.137:44444
+            192.168.8.108:44444
         </flumeAgents>
         <flumeProperties>
             connect-timeout=4000;

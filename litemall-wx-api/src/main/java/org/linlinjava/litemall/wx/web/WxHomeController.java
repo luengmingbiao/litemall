@@ -106,7 +106,7 @@ public class WxHomeController {
         Callable<List> hotGoodsListCallable = null;
         if (userId == null)
             hotGoodsListCallable = () -> goodsService.queryByHot(0, SystemConfig.getHotLimit());
-        else {
+        else{
             String recommendKey = userId + "Recommend";
             String recommendQueue = redisPoolFactory.JedisPoolFactory().getResource().get(recommendKey);
             String[] itemArray = recommendQueue.split(",");

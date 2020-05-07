@@ -13,11 +13,11 @@ logging:
 #redis
 redis:
   # Redis服务器地址
-  host: 192.168.87.144
+  host: 192.168.8.105
   # Redis服务器连接端口
   port: 6379
   # redis连接密码
-  password: myredis
+  password: redisredis
   # 连接超时时间（毫秒）
   timeout: 30000
   # 连接池中的最大空闲连接
